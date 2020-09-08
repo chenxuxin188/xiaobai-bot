@@ -102,10 +102,12 @@ async def _welcome(event: Event):
     await bot.send(event, '欢迎新人喵~~', at_sender = True)
     return
 
+
+#备用接口
 @bot.server_app.route('/glist/<user>', methods=('GET', 'POST'))
 async def _grouplist(user):
     t = False
-    for a in accounts:
+    for a in accounts.keys():
         if a == int(user):
             t = True
 
