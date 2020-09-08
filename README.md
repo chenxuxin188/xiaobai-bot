@@ -5,7 +5,7 @@
 
  基于[nonebot](https://github.com/nonebot/nonebot)开发，适配[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)的机器人。
 
- 说明移步[wiki]()
+ 说明移步[wiki](https://github.com/chenxuxin188/xiaobai-bot/wiki)
 
  # 感谢：
  - [nonebot](https://github.com/nonebot/nonebot)
