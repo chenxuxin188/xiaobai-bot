@@ -109,20 +109,32 @@ async def _grouplist(user):
     t = False
     for a in accounts.keys():
         if a == int(user):
-            t = True
+            if time.time() - accounts[a] < 10000:
+                print(time.time() - accounts[a])
+                t = True
 
     if t:
-        w = await bot.get_group_list(self_id=user)
-        r = bot.server_app.response_class(
-            status=200,
-            response=bot.server_app.json_encoder().encode(w),
-            mimetype='application/json'
-        )
-        return r
+        try:
+            w = await bot.get_group_list(self_id=user)
+            r = bot.server_app.response_class(
+                status=200,
+                response=bot.server_app.json_encoder().encode(w),
+                mimetype='application/json'
+            )
+            return r
+        except:
+            r = bot.server_app.response_class(
+                status=404,
+                response=str({'msg': '错误'}),
+                mimetype='application/json'
+            )
+            return r
+        
+        
     else:
         r = bot.server_app.response_class(
             status=404,
-            response=str({'msg': '没有这个账号'}),
+            response=str({'msg': '错误'}),
             mimetype='application/json'
         )
         return r
