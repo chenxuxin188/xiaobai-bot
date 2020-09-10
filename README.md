@@ -1,13 +1,16 @@
 # xiaobai-bot
  QQ机器人小白喵~~
 
- [官网](http://nyanyadance.com/)
+ [官网](https://nyanyadance.com/)
 
  萌新代码写的很难看求别嘲笑_(:з」∠)_
 
  基于[nonebot](https://github.com/nonebot/nonebot)开发，适配[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)的机器人。
 
  说明移步[wiki](https://github.com/chenxuxin188/xiaobai-bot/wiki)
+# 小白的管理网站
+
+[网站的代码](https://github.com/chenxuxin188/xiaobai-web)
 
  # 感谢：
  - [nonebot](https://github.com/nonebot/nonebot)
