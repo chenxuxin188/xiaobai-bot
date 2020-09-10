@@ -104,11 +104,22 @@ async def _welcome(event: Event):
 
 
 #备用接口
-@bot.server_app.route('/glist/<user>', methods=('GET', 'POST'))
-async def _grouplist(user):
+@bot.server_app.route('/glist/<usr>', methods=('GET', 'POST'))
+async def _grouplist(usr):
     t = False
+    user = False
+    try:
+        user = int(usr)
+    except:
+        r = bot.server_app.response_class(
+            status=404,
+            response=str({'msg': '错误'}),
+            mimetype='application/json'
+        )
+        return r
+
     for a in accounts.keys():
-        if a == int(user):
+        if a == user:
             if time.time() - accounts[a] < 10000:
                 print(time.time() - accounts[a])
                 t = True
