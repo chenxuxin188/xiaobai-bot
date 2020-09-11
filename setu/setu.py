@@ -13,7 +13,7 @@ import traceback
 url = 'https://api.lolicon.app/setu/?apikey={}{}{}'
 header = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36 Edg/84.0.522.49"
-    }
+}
 
 setuReg = r'^ *(?P<keyword>.*?)?[冲衝Gg][冲衝Kk][冲衝Dd][！!]*$'
 tripleReg = r'^ *(?P<keyword>.*?)?三连[冲衝][！!]*$'
@@ -97,7 +97,8 @@ async def sendSetu(event, bot, CQparse, g):
     
     if(g):
         if(g[1]):
-            apikey = g[1]
+            if(g[1] != ''):
+                apikey = g[1]
         else:
             await bot.send(event, '咱没办法在这个群发色图喵~~')
             gstat[event.group_id] = 0
