@@ -44,8 +44,9 @@ async def interact(event, bot, CQparse, DB, g):
         for code in codes:
             p = CQparse.CQparse(code)
             if p['CQtype'] == 'at':
-                if int(p['qq']) == event.self_id:
-                    at = True
+                if p['qq'] != 'all':
+                    if int(p['qq']) == event.self_id:
+                        at = True
         if at == False:
             return False
 

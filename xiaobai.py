@@ -28,6 +28,8 @@ bot = CQHttp(access_token=config.access_token)
 accounts = {}
 call = []
 
+message = []
+
 def pushcall (time):
     call.append(time)
     if len(call) > 30:
@@ -37,6 +39,30 @@ def pushcall (time):
 async def _meta(event:Event):
     accounts.update({event.self_id: time.time()})
     pass
+
+@bot.on_message('private')
+async def _private(event:Event):
+    if event.user_id != config.superuser:
+        return
+    cmdReg = r'^-(?P<command>[a-zA-Z0-9]+)=(?P<text>.*)$'
+    cmd = re.match(cmdReg, event.message)
+    if cmd.group('command') == 'broadcast':
+        for a in accounts.keys():
+            if time.time() - accounts[a] < 10000:
+                w = await bot.get_group_list(self_id=a)
+                for group in w:
+                    db = DB()
+                    try:
+                        await db.connect()
+                        g = await db.getGroup(group['group_id'])
+                        if(g[8]) == 1:
+                            continue
+                        await bot.send_msg(self_id=a, group_id=group['group_id'], message_type='group', message=cmd.group('text'))
+                    except Exception:
+                        print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[ERROR]' + traceback.format_exc())
+                        continue
+        
+
 
 @bot.on_message('group.normal')
 async def _groupMsg(event: Event):
@@ -62,7 +88,7 @@ async def _groupMsg(event: Event):
                 return
 
     if re.search(r'([命指口]令)|(说明)', event.message):
-        await bot.send(event, "http://nyanyadance.com/", at_sender=True)
+        await bot.send(event, "https://nyanyadance.com/", at_sender=True)
         pushcall(time.time())
         return
 
