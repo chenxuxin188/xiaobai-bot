@@ -17,7 +17,6 @@ import repeat
 import antirecall
 import blb
 
-loop = asyncio.new_event_loop()
 db = DB()
 
 async def yeshou(event, bot):
@@ -61,8 +60,9 @@ async def _meta(event:Event):
 
 @bot.on_startup
 async def _st():
+    loop = asyncio.get_event_loop()
     await db.createPool(loop)
-    loop.create_task(subsblb())
+    loop.create_task(followblb())
     pass
 
 @bot.on_message('private')
@@ -201,5 +201,5 @@ async def _freq():
         )
         return r
 
-loop.create_task(bot.run_task(host=config.host_ip, port=config.host_port))
-loop.run_forever()
+bot.run(host=config.host_ip, port=config.host_port)
+
