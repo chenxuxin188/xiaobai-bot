@@ -31,12 +31,6 @@ accounts = {}
 groups = {}
 call = []
 
-async def subsblb():
-    await asyncio.sleep(10)
-    while True:
-        await asyncio.sleep(1)
-        await blb.checkBooks(bot, db, groups)
-
 def pushcall (time):
     call.append(time)
     if len(call) > 30:
@@ -44,9 +38,8 @@ def pushcall (time):
 
 async def followblb():
     while True:
-        await asyncio.sleep(10)
+        await asyncio.sleep(30)
         await blb.checkBooks(bot, db, groups)
-
 
 @bot.on_meta_event('heartbeat')
 async def _meta(event:Event):
