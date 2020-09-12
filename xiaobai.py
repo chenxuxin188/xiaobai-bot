@@ -193,6 +193,4 @@ async def _freq():
         )
         return r
 
-
-
 bot.run(host=config.host_ip, port=config.host_port)

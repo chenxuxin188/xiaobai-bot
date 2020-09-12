@@ -20,4 +20,3 @@
 
  # 接gu下gu来gu要gu做gu的gu功gu能gu
  - B站UP动态更新提醒
- - 菠萝包小说更新提醒
