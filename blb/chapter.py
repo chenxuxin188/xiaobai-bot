@@ -86,7 +86,7 @@ async def getChapters(free, vip, book, name):
         title = p.find('h1', class_='article-title').text
         count = int(re.match(countReg, p.find(text=re.compile(countReg))).group('count'))
         preview = p.find(id='ChapterBody').text[:90] + '...'
-        text= freeurl.format(book,f[1],f[0]) + '\n更新了喵更新了喵~~！！\n书名：'+ name + '\n' + title + '\n'+ preview + '\n字数：' + str(count) + "\n" + "评价："
+        text= '[CQ:at,qq=all]' + freeurl.format(book,f[1],f[0]) + '\n更新了喵更新了喵~~！！\n书名：'+ name + '\n' + title + '\n'+ preview + '\n字数：' + str(count) + "\n" + "评价："
         s = ''
         if count >= 4000:
             s = '哇！更新了好多喵！太好了喵！'
@@ -117,7 +117,7 @@ async def getChapters(free, vip, book, name):
         count = int(re.match(countReg, p.find(text=re.compile(countReg))).group('count'))
         preview = p.find(id='ChapterBody').text
 
-        text= vipurl.format(v) + '\n更新了喵更新了喵~~！！\n书名：'+ name + '\n' + title + '\n'+ preview + '\n字数：' + str(count) + "\n" + "评价："
+        text= '[CQ:at,qq=all]' + vipurl.format(v) + '\n更新了喵更新了喵~~！！\n书名：'+ name + '\n' + title + '\n'+ preview + '\n字数：' + str(count) + "\n" + "评价："
         
         s = ''
         if count >= 4000:
