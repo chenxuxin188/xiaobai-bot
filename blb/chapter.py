@@ -21,7 +21,7 @@ async def request(url, header):
             return False
 
 async def checkNovel(book):
-    r = None
+    r = False
     t = 0
     s = False
     while t < 3 and not s:
@@ -31,7 +31,7 @@ async def checkNovel(book):
             s = True
         except:
             s = False
-    if s:
+    if s and r:
         m = 0
         result = {'success': True}
         p = BeautifulSoup(r.text, 'html.parser')
