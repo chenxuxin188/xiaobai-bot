@@ -194,5 +194,44 @@ async def _freq():
         )
         return r
 
-bot.run(host=config.host_ip, port=config.host_port)
 
+@bot.server_app.route('/book/<book>', methods=('GET', 'POST'))
+async def _book(book):
+    t = False
+    b = False
+    try:
+        b = int(book)
+    except:
+        r = bot.server_app.response_class(
+            status=404,
+            response=str({'msg': '错误'}),
+            mimetype='application/json'
+        )
+        return r
+
+    res = await blb.getNovel(b)
+
+    if not res['success']:
+        r = bot.server_app.response_class(
+            status=404,
+            response=str({'msg': '错误'}),
+            mimetype='application/json'
+        )
+        return r
+    else:
+        try:
+            r = bot.server_app.response_class(
+                status=200,
+                response=bot.server_app.json_encoder().encode([res['title'],res['chapter']]),
+                mimetype='application/json'
+            )
+            return r
+        except:
+            r = bot.server_app.response_class(
+                status=404,
+                response=str({'msg': '错误'}),
+                mimetype='application/json'
+            )
+            return r
+
+bot.run(host=config.host_ip, port=config.host_port)

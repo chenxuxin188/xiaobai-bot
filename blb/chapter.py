@@ -35,6 +35,11 @@ async def checkNovel(book):
         m = 0
         result = {'success': True}
         p = BeautifulSoup(r.text, 'html.parser')
+
+        title = p.find_all('title')
+        if title[0].text == "出错了":
+            result.update({'success': False})
+            return result
         free = p.find_all('a', href=re.compile(freeReg))
         vip = p.find_all('a', href=re.compile(vipReg))
         freeList = []
@@ -130,3 +135,43 @@ async def getChapters(free, vip, book, name):
 
     return updates
 
+
+
+async def getNovel(book):
+    r = None
+    t = 0
+    s = False
+    while t < 3 and not s:
+        t += 1
+        try:
+            r = await request(url.format(book), header)
+            s = True
+        except:
+            s = False
+    if s:
+        m = 0
+        result = {'success': True}
+        p = BeautifulSoup(r.text, 'html.parser')
+        title = p.find_all('title')
+        if title[0].text == "出错了":
+            result.update({'title': "出错了", "chapter":99999999})
+            return result
+        titleReg = r'^(?P<name>.*)章节列表\|.*\|.*\|.*网站$'
+        n=re.match(titleReg,title[0].text).group('name')
+        result.update({'title':n})
+        free = p.find_all('a', href=re.compile(freeReg))
+        vip = p.find_all('a', href=re.compile(vipReg))
+        for f in free:
+            ff = re.match(freeReg, f['href'])
+            chapter = int(ff.group('chapter'))
+            if chapter > m:
+                m = chapter
+        for f in vip:
+            ff = re.match(vipReg, f['href'])
+            chapter = int(ff.group('chapter'))
+            if chapter > m:
+                m = chapter
+        result.update({'chapter':m})
+        return result
+    else:
+        return {'success': False, 'title': "失败", "chapter":99999999}
