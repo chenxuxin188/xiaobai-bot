@@ -15,6 +15,9 @@ import setu
 import interact
 import repeat
 import antirecall
+import blb
+
+db = DB()
 
 async def yeshou(event, bot):
     if re.search(r'(野兽)|(114514)|臭', event.message):
@@ -24,20 +27,35 @@ async def yeshou(event, bot):
     return False
 
 bot = CQHttp(access_token=config.access_token)
-
 accounts = {}
+groups = {}
 call = []
-
-message = []
 
 def pushcall (time):
     call.append(time)
     if len(call) > 30:
         call.pop(0)
 
+async def followblb():
+    while True:
+        await asyncio.sleep(30)
+        await blb.checkBooks(bot, db, groups)
+
 @bot.on_meta_event('heartbeat')
 async def _meta(event:Event):
-    accounts.update({event.self_id: time.time()})
+    try:
+        w = await bot.get_group_list(self_id=event.self_id)
+        for group in w:
+            groups.update({group['group_id']: event.self_id})
+        accounts.update({event.self_id: time.time()})
+    except:
+        pass
+
+@bot.on_startup
+async def _st():
+    loop = asyncio.get_event_loop()
+    await db.createPool(loop)
+    loop.create_task(followblb())
     pass
 
 @bot.on_message('private')
@@ -51,9 +69,7 @@ async def _private(event:Event):
             if time.time() - accounts[a] < 10000:
                 w = await bot.get_group_list(self_id=a)
                 for group in w:
-                    db = DB()
                     try:
-                        await db.connect()
                         g = await db.getGroup(group['group_id'])
                         if(g[8]) == 1:
                             continue
@@ -68,17 +84,11 @@ async def _private(event:Event):
 async def _groupMsg(event: Event):
     if await yeshou(event, bot):
         return
-    db = DB()
-    await db.connect()
     g = await db.getGroup(event.group_id)
     
     if not g:
         await db.addGroup(event.group_id)
-        db.close()
-        del db
         return
-    db.close()
-    del db
     if g[8] == 1:
         return
     if g[9]:
@@ -95,7 +105,7 @@ async def _groupMsg(event: Event):
     if await setu.sendSetu(event, bot, CQparse, g): 
         pushcall(time.time())
         return
-    elif await interact.interact(event, bot, CQparse, DB, g): 
+    elif await interact.interact(event, bot, CQparse, db, g): 
         pushcall(time.time())
         return
     elif await repeat.repeat(event, bot, CQparse, g): 
@@ -109,22 +119,14 @@ async def _groupMsg(event: Event):
 
 @bot.on_notice('group_recall')
 async def _antirecall(event: Event):
-    db = DB()
-    await db.connect()
     g = await db.getGroup(event.group_id)
-    
     if not g:
         await db.addGroup(event.group_id)
-        db.close()
-        del db
         return
-    db.close()
-    del db
     await antirecall.antirecall(event, bot, g)
 
 @bot.on_notice('group_increase.approve', 'group_increase.invite')
 async def _welcome(event: Event):
-    print(event)
     await bot.send(event, '欢迎新人喵~~', at_sender = True)
     return
 
@@ -147,7 +149,6 @@ async def _grouplist(usr):
     for a in accounts.keys():
         if a == user:
             if time.time() - accounts[a] < 10000:
-                print(time.time() - accounts[a])
                 t = True
 
     if t:
@@ -194,5 +195,43 @@ async def _freq():
         return r
 
 
+@bot.server_app.route('/book/<book>', methods=('GET', 'POST'))
+async def _book(book):
+    t = False
+    b = False
+    try:
+        b = int(book)
+    except:
+        r = bot.server_app.response_class(
+            status=404,
+            response=str({'msg': '错误'}),
+            mimetype='application/json'
+        )
+        return r
+
+    res = await blb.getNovel(b)
+
+    if not res['success']:
+        r = bot.server_app.response_class(
+            status=404,
+            response=str({'msg': '错误'}),
+            mimetype='application/json'
+        )
+        return r
+    else:
+        try:
+            r = bot.server_app.response_class(
+                status=200,
+                response=bot.server_app.json_encoder().encode([res['title'],res['chapter']]),
+                mimetype='application/json'
+            )
+            return r
+        except:
+            r = bot.server_app.response_class(
+                status=404,
+                response=str({'msg': '错误'}),
+                mimetype='application/json'
+            )
+            return r
 
 bot.run(host=config.host_ip, port=config.host_port)

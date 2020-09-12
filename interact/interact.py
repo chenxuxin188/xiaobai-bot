@@ -19,7 +19,7 @@ logger = {}
 
 usr = {}
 
-async def interact(event, bot, CQparse, DB, g):
+async def interact(event, bot, CQparse, db, g):
     if re.search(liantongReg, event.message):
         await bot.send(event, '五年起步，最高死刑喵！',at_sender = True)
         return True
@@ -69,13 +69,11 @@ async def interact(event, bot, CQparse, DB, g):
 
     lt = time.localtime()
 
-    db = DB()
-    await db.connect()
+
     signed = await db.isSigned(event.user_id)
     ulike = await db.getLike(event.user_id)
     mood = await db.getMood(event.user_id)
-    db.close()
-    del db
+
 
     kq = re.search(kouqiuReg,msg)
     if kq:
@@ -88,11 +86,7 @@ async def interact(event, bot, CQparse, DB, g):
         await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = dur)
 
     if re.match(signReg, msg):
-        db = DB()
-        await db.connect()
         si = await db.sign(event.user_id)
-        db.close()
-        del db
         if si:
             await bot.send(event, '喵喵~~签到成功了喵！\n心情值：{}'.format(si), at_sender = True)
             return True
@@ -214,23 +208,11 @@ async def interact(event, bot, CQparse, DB, g):
 
         if clike[3][mm][ll] == 1:
             if(r < mood):
-                db = DB()
-                await db.connect()
                 await db.changeLike(event.user_id, 1)
-                db.close()
-                del db
         elif clike[3][mm][ll] == -1:
             if(r > mood):
-                db = DB()
-                await db.connect()
                 await db.changeLike(event.user_id, -1)
-                db.close()
-                del db
-        db = DB()
-        await db.connect()
         await db.changeMood(event.user_id, clike[2][mm][ll])
-        db.close()
-        del db
         x = randrange(1,len(clike[4][mm][ll]))
         await bot.send(event, clike[4][mm][ll][x], at_sender = True)
         if  clike[4][mm][ll][0] > 0:
@@ -249,23 +231,11 @@ async def interact(event, bot, CQparse, DB, g):
         r = randrange(200)
         if cnormal[3][mm] ==1:
             if(r < m):
-                db = DB()
-                await db.connect()
                 await db.changeLike(event.user_id, 1)
-                db.close()
-                del db
         elif cnormal[3][mm] == -1:
             if(r > m):
-                db = DB()
-                await db.connect()
                 await db.changeLike(event.user_id, -1)
-                db.close()
-                del db
-        db = DB()
-        await db.connect()
         await db.changeMood(event.user_id, cnormal[2][mm])
-        db.close()
-        del db
         x = randrange(1,len(cnormal[1][mm]))
         await bot.send(event, cnormal[1][mm][x], at_sender = True)
         if cnormal[1][mm][0] > 0:
