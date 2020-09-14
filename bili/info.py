@@ -60,6 +60,8 @@ async def getCards(uid):
     if not result:
         return False
     data = json.loads(result.text).get('data')
+    if not data:
+        return False
     cards = data.get('cards')
     if not cards:
         return False

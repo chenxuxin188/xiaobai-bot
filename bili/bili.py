@@ -27,15 +27,12 @@ async def checkUps(bot, db, CQparse, groups):
             if c.get('id') > did:
                 dl.append(c)
         
-        change = False
-        lstat = False
-        if blive == 0:
-            if live != False:
-                change = True
+        lstat = None
+        if live:
+            if blive == 0:
                 lstat = 1
-        else:
-            if not live:
-                change = True
+        elif not live:
+            if blive == 1:
                 lstat = 0
 
         for group in g:
@@ -46,11 +43,10 @@ async def checkUps(bot, db, CQparse, groups):
                 bs = json.loads(group[13])
                 for bl in bs:
                     if bl == uid:
-                        if change:
-                            if lstat == 1:
-                                await bot.send_msg(self_id=a, group_id=group[0],message="关注的UP主【{}】开始直播了喵！直播间地址为：\n{}".format(name, live))
-                            elif lstat == 0:
-                                await bot.send_msg(self_id=a, group_id=group[0],message="关注的UP主【{}】下播了喵~".format(name))
+                        if lstat == 1:
+                            await bot.send_msg(self_id=a, group_id=group[0],message="关注的UP主【{}】开始直播了喵！直播间地址为：\n{}".format(name, live))
+                        elif lstat == 0:
+                            await bot.send_msg(self_id=a, group_id=group[0],message="关注的UP主【{}】下播了喵~".format(name))
 
                         for u in dl:
                             if u.get('type') == 'update_picture_dynamic':
@@ -125,5 +121,5 @@ async def checkUps(bot, db, CQparse, groups):
                         break
         if len(dl) != 0:
             await db.biliDynamicUpdated(uid, dl[0].get('id'))
-        if change:
+        if lstat == 0 or lstat == 1:
             await db.biliLiveUpdated(uid, lstat)
