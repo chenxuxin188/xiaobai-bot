@@ -48,6 +48,51 @@ async def followbili():
         await asyncio.sleep(10)
         await bili.checkUps(bot, db, CQparse, groups)
 
+async def updateBlb():
+    while True:
+        l = await db.blbBookList()
+        add = {}
+        for gro in ginfo.keys():
+            gr = ginfo.get(gro)
+            g = gr[0]
+            if g[12]:
+                gl = json.loads(g[12])
+                for gg in gl:
+                    q = False
+                    for ll in l:
+                        if gg == ll[0]:
+                            q = True
+                    if not q:
+                        add.update({gg:True})
+        for v in add.keys():
+            r = await blb.getNovel(v)
+            if r.get('success'):
+                await db.blbAdd(v,r.get('title'),r.get('chapter'))
+        await asyncio.sleep(60)
+
+async def updateBili():
+    while True:
+        l = await db.biliList()
+        add = {}
+        for gro in ginfo.keys():
+            gr = ginfo.get(gro)
+            g = gr[0]
+            if g[13]:
+                gl = json.loads(g[13])
+                for gg in gl:
+                    q = False
+                    for ll in l:
+                        if gg == ll[0]:
+                            q = True
+                    if not q:
+                        add.update({gg:True})
+        for v in add.keys():
+            r = await bili.getUp(v)
+            if r.get('success'):
+                await db.biliAdd(v,r.get('name'),r.get('did'),0)
+        await asyncio.sleep(60)
+
+
 @bot.on_meta_event('heartbeat')
 async def _meta(event:Event):
     try:
@@ -68,6 +113,8 @@ async def _st():
         ginfo.update({g[0]:[g,t]})
     loop.create_task(followblb())
     loop.create_task(followbili())
+    loop.create_task(updateBili())
+    loop.create_task(updateBlb())
     pass
 
 @bot.on_message('private')
@@ -240,7 +287,7 @@ async def _book(book):
         try:
             r = bot.server_app.response_class(
                 status=200,
-                response=bot.server_app.json_encoder().encode([book, res['title'],res['chapter']]),
+                response=bot.server_app.json_encoder().encode([res['title'],res['chapter']]),
                 mimetype='application/json'
             )
             return r
@@ -278,7 +325,7 @@ async def _biliup(uid):
         try:
             r = bot.server_app.response_class(
                 status=200,
-                response=bot.server_app.json_encoder().encode([uid, res['name'],res['did']]),
+                response=bot.server_app.json_encoder().encode([res['name'],res['did']]),
                 mimetype='application/json'
             )
             return r

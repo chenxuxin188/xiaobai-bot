@@ -373,6 +373,18 @@ class DB:
       print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[ERROR]' + traceback.format_exc())
       return False
 
+  async def blbAdd(self, book, name, chapter):
+    try:
+      async with self.pool.acquire() as mydb:
+        async with mydb.cursor() as db:
+          await db.execute('INSERT INTO `blb` (`id`,`name`,`chapter`) VALUES (%s,%s,%s)', (book,name,chapter))
+          await db.close()
+          
+          return True
+    except Exception:
+      print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[ERROR]' + traceback.format_exc())
+      return False
+
 
   async def biliList(self):
     try:
@@ -404,6 +416,18 @@ class DB:
       async with self.pool.acquire() as mydb:
         async with mydb.cursor() as db:
           await db.execute('UPDATE `bili` SET `bili`.live=%s WHERE `bili`.id=%s', (stat,user))
+          await db.close()
+          
+          return True
+    except Exception:
+      print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[ERROR]' + traceback.format_exc())
+      return False
+
+  async def biliAdd(self, uid, name, did, live):
+    try:
+      async with self.pool.acquire() as mydb:
+        async with mydb.cursor() as db:
+          await db.execute('INSERT INTO `bili` (`id`,`name`,`did`,`live`) VALUES (%s,%s,%s,%s)', (uid,name,did,live))
           await db.close()
           
           return True
