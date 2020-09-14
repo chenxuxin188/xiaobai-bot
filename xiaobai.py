@@ -240,7 +240,7 @@ async def _book(book):
         try:
             r = bot.server_app.response_class(
                 status=200,
-                response=bot.server_app.json_encoder().encode([res['title'],res['chapter']]),
+                response=bot.server_app.json_encoder().encode([book, res['title'],res['chapter']]),
                 mimetype='application/json'
             )
             return r
@@ -278,7 +278,7 @@ async def _biliup(uid):
         try:
             r = bot.server_app.response_class(
                 status=200,
-                response=bot.server_app.json_encoder().encode([res['name'],res['did']]),
+                response=bot.server_app.json_encoder().encode([uid, res['name'],res['did']]),
                 mimetype='application/json'
             )
             return r
