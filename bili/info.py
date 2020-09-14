@@ -44,7 +44,7 @@ async def getLive(uid):
     data = json.loads(result.text).get('data')
     if not data:
         return False
-    if data.get('status') == 0:
+    if data.get('status') != 1:
         return False
     else:
         return data.get('url')
