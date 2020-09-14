@@ -1,6 +1,8 @@
 superuser = 0
 access_token = ''
 
+first = True
+
 host_ip = '127.0.0.1'
 host_port = '8080'
 

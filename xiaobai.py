@@ -16,6 +16,7 @@ import interact
 import repeat
 import antirecall
 import blb
+import bili
 
 db = DB()
 
@@ -29,6 +30,7 @@ async def yeshou(event, bot):
 bot = CQHttp(access_token=config.access_token)
 accounts = {}
 groups = {}
+ginfo = {}
 call = []
 
 def pushcall (time):
@@ -40,6 +42,11 @@ async def followblb():
     while True:
         await asyncio.sleep(30)
         await blb.checkBooks(bot, db, groups)
+
+async def followbili():
+    while True:
+        await asyncio.sleep(10)
+        await bili.checkUps(bot, db, CQparse, groups)
 
 @bot.on_meta_event('heartbeat')
 async def _meta(event:Event):
@@ -55,7 +62,12 @@ async def _meta(event:Event):
 async def _st():
     loop = asyncio.get_event_loop()
     await db.createPool(loop)
+    gl = await db.groupList()
+    t = time.time()
+    for g in gl:
+        ginfo.update({g[0]:[g,t]})
     loop.create_task(followblb())
+    loop.create_task(followbili())
     pass
 
 @bot.on_message('private')
@@ -77,18 +89,25 @@ async def _private(event:Event):
                     except Exception:
                         print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[ERROR]' + traceback.format_exc())
                         continue
-        
-
 
 @bot.on_message('group.normal')
 async def _groupMsg(event: Event):
     if await yeshou(event, bot):
         return
-    g = await db.getGroup(event.group_id)
+    t = time.time()
+    g = None
     
-    if not g:
+    gr = ginfo.get(event.group_id)
+    if not gr:
         await db.addGroup(event.group_id)
-        return
+        g = await db.getGroup(event.group_id)
+        ginfo.update({g[0]:[g, t]})
+    elif t - gr[1] > 60:
+        g = await db.getGroup(event.group_id)
+        ginfo.update({g[0]:[g, t]})
+    else:
+        g = gr[0]
+
     if g[8] == 1:
         return
     if g[9]:
@@ -197,7 +216,6 @@ async def _freq():
 
 @bot.server_app.route('/book/<book>', methods=('GET', 'POST'))
 async def _book(book):
-    t = False
     b = False
     try:
         b = int(book)
@@ -223,6 +241,44 @@ async def _book(book):
             r = bot.server_app.response_class(
                 status=200,
                 response=bot.server_app.json_encoder().encode([res['title'],res['chapter']]),
+                mimetype='application/json'
+            )
+            return r
+        except:
+            r = bot.server_app.response_class(
+                status=404,
+                response=str({'msg': '错误'}),
+                mimetype='application/json'
+            )
+            return r
+
+@bot.server_app.route('/biliup/<uid>', methods=('GET', 'POST'))
+async def _biliup(uid):
+    b = False
+    try:
+        b = int(uid)
+    except:
+        r = bot.server_app.response_class(
+            status=404,
+            response=str({'msg': '错误'}),
+            mimetype='application/json'
+        )
+        return r
+
+    res = await bili.getUp(b)
+
+    if not res['success']:
+        r = bot.server_app.response_class(
+            status=404,
+            response=str({'msg': '错误'}),
+            mimetype='application/json'
+        )
+        return r
+    else:
+        try:
+            r = bot.server_app.response_class(
+                status=200,
+                response=bot.server_app.json_encoder().encode([res['name'],res['did']]),
                 mimetype='application/json'
             )
             return r

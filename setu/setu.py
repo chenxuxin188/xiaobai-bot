@@ -16,7 +16,7 @@ header = {
 }
 
 setuReg = r'^ *(?P<keyword>.*?)?[冲衝Gg][冲衝Kk][冲衝Dd][！!]*$'
-tripleReg = r'^ *(?P<keyword>.*?)?三连[冲衝][！!]*$'
+tripleReg = r'^ *(?P<keyword>.*?)?三[连連][冲衝][！!]*$'
 
 logger = {}
 gstat = {}

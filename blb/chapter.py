@@ -17,7 +17,7 @@ async def request(url, header):
             response = await client.get(url, headers = header, timeout=30)
             return response
         except httpx.HTTPError:
-            print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[HTTP]' + traceback.format_exc())
+            print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[HTTP]' + url + '\n' + traceback.format_exc())
             return False
 
 async def checkNovel(book):
@@ -31,6 +31,7 @@ async def checkNovel(book):
             s = True
         except:
             s = False
+            await asyncio.sleep(1)
     if s and r:
         m = 0
         result = {'success': True}
@@ -150,11 +151,11 @@ async def getNovel(book):
             s = False
     if s:
         m = 0
-        result = {'success': True}
+        result = {}
         p = BeautifulSoup(r.text, 'html.parser')
         title = p.find_all('title')
         if title[0].text == "出错了":
-            result.update({'title': "出错了", "chapter":99999999})
+            result.update({'success': False, 'title': "出错了", "chapter":99999999})
             return result
         titleReg = r'^(?P<name>.*)章节列表\|.*\|.*\|.*网站$'
         n=re.match(titleReg,title[0].text).group('name')
@@ -171,7 +172,7 @@ async def getNovel(book):
             chapter = int(ff.group('chapter'))
             if chapter > m:
                 m = chapter
-        result.update({'chapter':m})
+        result.update({'success': True, 'chapter':m})
         return result
     else:
         return {'success': False, 'title': "失败", "chapter":99999999}
