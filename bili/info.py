@@ -68,18 +68,17 @@ async def getCards(uid):
     cc = [] 
     for card in cards:
         did = card['desc'].get('dynamic_id')
+        time = card['desc'].get('timestamp')
         cd = json.loads(card.get('card'))
         item = cd.get('item')
         if item:
             description = item.get('description')
             content = item.get('content')
             if description:
-                time = item.get('upload_time')
                 pic = item.get('pictures')
                 cc.append({"id": did, "type": "update_picture_dynamic", "content": description, "pic": pic, "time":time})
             else:
                 if cd.get('origin'):
-                    time = item.get('timestamp')
                     origin = json.loads(cd.get('origin'))
                     oitem = origin.get('item')
                     if oitem:
@@ -109,7 +108,6 @@ async def getCards(uid):
                             title = origin.get('title')
                             cc.append({"id": did, "type": "update_forward_video", "content":content,"title": title, "url": video,"time":time})
                 else:
-                    time = item.get('timestamp')
                     cc.append({"id": did, "type": "update_dynamic", "content": content, "time":time})
 
         else :
@@ -117,15 +115,12 @@ async def getCards(uid):
             vest = cd.get('vest')
             if vest:
                 content = vest.get('content')
-                time = vest.get('ctime')
                 cc.append({"id": did, "type": "update_vest", "content": content,"time":time})
             elif id_:
                 title = cd.get('title')
-                time = cd.get('ctime')
                 cc.append({"id": did, "type": "update_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":time})
             else:
                 content = cd.get('dynamic')
-                time = cd.get('ctime')
                 video = cd.get('jump_url')
                 video = "https://www.bilibili.com/video/{}".format(enc(int(re.match(avReg, video).group('av'))))
                 title = cd.get('title')
@@ -150,4 +145,4 @@ async def getUp(uid):
     did = cards[0].get('desc').get('dynamic_id')
     
     return({'success': True, 'name': name, "did":did})
-        
+    
