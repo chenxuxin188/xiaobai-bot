@@ -40,6 +40,7 @@ class DB:
                     `antirecall` tinyint(0) NOT NULL DEFAULT 1,
                     `blb` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL,
                     `bili` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL,
+                    `atownerban` bigint(0) NOT NULL DEFAULT 0,
                     PRIMARY KEY (`group`) USING BTREE
                   ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;"""
 
@@ -91,7 +92,8 @@ class DB:
           "ALTER TABLE `group` ADD COLUMN `repeat` tinyint(0) NOT NULL DEFAULT 1",
           "ALTER TABLE `group` ADD COLUMN `antirecall` tinyint(0) NOT NULL DEFAULT 1",
           "ALTER TABLE `group` ADD COLUMN `blb` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL",
-          "ALTER TABLE `group` ADD COLUMN `bili` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL"
+          "ALTER TABLE `group` ADD COLUMN `bili` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL",
+          "ALTER TABLE `group` ADD COLUMN `atownerban` bigint(0) NOT NULL DEFAULT 0",
         ]
 
         csign = [

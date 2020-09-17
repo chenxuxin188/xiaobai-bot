@@ -1,8 +1,7 @@
 from .info import getCards, request, getLive
 import asyncio
 import json
-import time
-from bs4 import BeautifulSoup
+import time 
 
 loop = asyncio.new_event_loop()
 
@@ -34,7 +33,7 @@ async def checkUps(bot, db, CQparse, groups):
         elif not live:
             if blive == 1:
                 lstat = 0
-
+                
         for group in g:
             a = groups.get(group[0])
             if not a:

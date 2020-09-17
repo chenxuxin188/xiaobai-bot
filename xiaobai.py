@@ -17,6 +17,7 @@ import repeat
 import antirecall
 import blb
 import bili
+import atownerban
 
 db = DB()
 
@@ -50,47 +51,54 @@ async def followbili():
 
 async def updateBlb():
     while True:
-        l = await db.blbBookList()
-        add = {}
-        for gro in ginfo.keys():
-            gr = ginfo.get(gro)
-            g = gr[0]
-            if g[12]:
-                gl = json.loads(g[12])
-                for gg in gl:
-                    q = False
-                    for ll in l:
-                        if gg == ll[0]:
-                            q = True
-                    if not q:
-                        add.update({gg:True})
-        for v in add.keys():
-            r = await blb.getNovel(v)
-            if r.get('success'):
-                await db.blbAdd(v,r.get('title'),r.get('chapter'))
-        await asyncio.sleep(60)
+        try:
+            l = await db.blbBookList()
+            add = {}
+            for gro in ginfo.keys():
+                gr = ginfo.get(gro)
+                g = gr[0]
+                if g[12]:
+                    gl = json.loads(g[12])
+                    for gg in gl:
+                        q = False
+                        for ll in l:
+                            if gg == ll[0]:
+                                q = True
+                        if not q:
+                            add.update({gg:True})
+            for v in add.keys():
+                r = await blb.getNovel(v)
+                if r.get('success'):
+                    await db.blbAdd(v,r.get('title'),r.get('chapter'))
+            await asyncio.sleep(60)
+        except Exception:
+            print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[bilibili]' + traceback.format_exc())
+
 
 async def updateBili():
     while True:
-        l = await db.biliList()
-        add = {}
-        for gro in ginfo.keys():
-            gr = ginfo.get(gro)
-            g = gr[0]
-            if g[13]:
-                gl = json.loads(g[13])
-                for gg in gl:
-                    q = False
-                    for ll in l:
-                        if gg == ll[0]:
-                            q = True
-                    if not q:
-                        add.update({gg:True})
-        for v in add.keys():
-            r = await bili.getUp(v)
-            if r.get('success'):
-                await db.biliAdd(v,r.get('name'),r.get('did'),0)
-        await asyncio.sleep(60)
+        try:
+            l = await db.biliList()
+            add = {}
+            for gro in ginfo.keys():
+                gr = ginfo.get(gro)
+                g = gr[0]
+                if g[13]:
+                    gl = json.loads(g[13])
+                    for gg in gl:
+                        q = False
+                        for ll in l:
+                            if gg == ll[0]:
+                                q = True
+                        if not q:
+                            add.update({gg:True})
+            for v in add.keys():
+                r = await bili.getUp(v)
+                if r.get('success'):
+                    await db.biliAdd(v,r.get('name'),r.get('did'),0)
+            await asyncio.sleep(1)
+        except Exception:
+            print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[boluobao]' + traceback.format_exc())
 
 
 @bot.on_meta_event('heartbeat')
@@ -167,8 +175,10 @@ async def _groupMsg(event: Event):
         await bot.send(event, "https://nyanyadance.com/", at_sender=True)
         pushcall(time.time())
         return
-
-    if await setu.sendSetu(event, bot, CQparse, g): 
+    if await atownerban.atownerban(event, bot, CQparse, g):
+        pushcall(time.time())
+        return
+    elif await setu.sendSetu(event, bot, CQparse, g): 
         pushcall(time.time())
         return
     elif await interact.interact(event, bot, CQparse, db, g): 
