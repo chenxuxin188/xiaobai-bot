@@ -46,7 +46,7 @@ async def followblb():
 
 async def followbili():
     while True:
-        await asyncio.sleep(10)
+        await asyncio.sleep(30)
         await bili.checkUps(bot, db, CQparse, groups)
 
 async def updateBlb():

@@ -11,7 +11,7 @@ async def checkBooks(bot, db, groups):
         return
 
     for b in l:
-        await asyncio.sleep(1)
+        await asyncio.sleep(10)
         book = b[0]
         name = b[1]
         chapter = b[2]
@@ -44,7 +44,10 @@ async def checkBooks(bot, db, groups):
                             while not suc and ttt < 3:
                                 try:
                                     ttt += 1
-                                    await bot.send_msg(self_id=a, group_id=group[0],message=u)
+                                    atall = ''
+                                    if group[15] == 1:
+                                        atall = '[CQ:at,qq=all]'
+                                    await bot.send_msg(self_id=a, group_id=group[0],message=atall + u)
                                     await asyncio.sleep(0.2)
                                     suc = True
                                 except:

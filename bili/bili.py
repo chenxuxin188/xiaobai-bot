@@ -12,7 +12,7 @@ async def checkUps(bot, db, CQparse, groups):
         return
 
     for b in l:
-        await asyncio.sleep(1)
+        await asyncio.sleep(10)
         uid = b[0]
         name = b[1]
         did = b[2]
