@@ -23,16 +23,11 @@ async def request(url, header):
 async def checkNovel(book):
     r = False
     t = 0
-    s = False
-    while t < 3 and not s:
+    while t < 3 and not r:
         t += 1
-        try:
-            r = await request(url.format(book), header)
-            s = True
-        except:
-            s = False
-            await asyncio.sleep(1)
-    if s and r:
+        r = await request(url.format(book), header)
+        await asyncio.sleep(1)
+    if r:
         m = 0
         result = {'success': True}
         p = BeautifulSoup(r.text, 'html.parser')
@@ -77,17 +72,15 @@ async def getChapters(free, vip, book, name):
         r = False
         c = 0
         while not r and c < 3:
-            try:
-                r = await request(freeurl.format(book,f[1],f[0]), header)
-            except:
-                r = False
+            c += 1
+            r = await request(freeurl.format(book,f[1],f[0]), header)
         if not r:
             continue
         p = BeautifulSoup(r.text, 'html.parser')
         title = p.find('h1', class_='article-title').text
         count = int(re.match(countReg, p.find(text=re.compile(countReg))).group('count'))
         preview = p.find(id='ChapterBody').text[:90] + '...'
-        text= '[CQ:at,qq=all]' + freeurl.format(book,f[1],f[0]) + '\n更新了喵更新了喵~~！！\n书名：'+ name + '\n' + title + '\n'+ preview + '\n字数：' + str(count) + "\n" + "评价："
+        text= freeurl.format(book,f[1],f[0]) + '\n更新了喵更新了喵~~！！\n书名：'+ name + '\n' + title + '\n'+ preview + '\n字数：' + str(count) + "\n" + "评价："
         s = ''
         if count >= 4000:
             s = '哇！更新了好多喵！太好了喵！'
@@ -107,10 +100,8 @@ async def getChapters(free, vip, book, name):
         r = False
         c = 0
         while not r and c < 3:
-            try:
-                r = await request(vipurl.format(v), header)
-            except:
-                r = False
+            c += 1
+            r = await request(vipurl.format(v), header)
         if not r:
             continue
         p = BeautifulSoup(r.text, 'html.parser')
@@ -118,7 +109,7 @@ async def getChapters(free, vip, book, name):
         count = int(re.match(countReg, p.find(text=re.compile(countReg))).group('count'))
         preview = p.find(id='ChapterBody').text
 
-        text= '[CQ:at,qq=all]' + vipurl.format(v) + '\n更新了喵更新了喵~~！！\n书名：'+ name + '\n' + title + '\n'+ preview + '\n字数：' + str(count) + "\n" + "评价："
+        text = vipurl.format(v) + '\n更新了喵更新了喵~~！！\n书名：'+ name + '\n' + title + '\n'+ preview + '\n字数：' + str(count) + "\n" + "评价："
         
         s = ''
         if count >= 4000:
@@ -141,15 +132,10 @@ async def getChapters(free, vip, book, name):
 async def getNovel(book):
     r = None
     t = 0
-    s = False
-    while t < 3 and not s:
+    while t < 3 and not r:
         t += 1
-        try:
-            r = await request(url.format(book), header)
-            s = True
-        except:
-            s = False
-    if s:
+        r = await request(url.format(book), header)
+    if r:
         m = 0
         result = {}
         p = BeautifulSoup(r.text, 'html.parser')
