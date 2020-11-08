@@ -46,7 +46,7 @@ async def followblb():
 
 async def followbili():
     while True:
-        await asyncio.sleep(randrange(10,60))
+        await asyncio.sleep(30)
         await bili.checkUps(bot, db, CQparse, groups, config.SESSDATA, config.CSRF)
 
 async def updateBlb():
@@ -322,7 +322,7 @@ async def _biliup(uid):
         )
         return r
 
-    res = await bili.getUp(b)
+    res = await bili.getUp(b, config.SESSDATA, config.CSRF)
 
     if not res['success']:
         r = bot.server_app.response_class(

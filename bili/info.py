@@ -47,12 +47,12 @@ async def getLive(uid, SESSDATA, CSRF):
         result = await request(lurl.format(uid), header, cookies)
     if not result:
         return False
-    code = json.loads(result.text).get('code')
-    msg = json.loads(result.text).get('message')
+    code = json.loads(result.content).get('code')
+    msg = json.loads(result.content).get('message')
     if code != 0:
         print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[HTTP]' + 'Code:{}  Msg:{}'.format(code,msg))
         return False
-    data = json.loads(result.text).get('data')
+    data = json.loads(result.content).get('data')
     if not data:
         return False
     if data.get('status') != 1:
@@ -75,12 +75,12 @@ async def getCards(uid, SESSDATA, CSRF):
         result = await request(durl.format(uid), hh, cookies)
     if not result:
         return False
-    code = json.loads(result.text).get('code')
-    msg = json.loads(result.text).get('message')
+    code = json.loads(result.content).get('code')
+    msg = json.loads(result.content).get('message')
     if code != 0:
         print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[HTTP]' + 'Code:{}  Msg:{}'.format(code,msg))
         return False
-    data = json.loads(result.text).get('data')
+    data = json.loads(result.content).get('data')
     if not data:
         return False
     cards = data.get('cards')
@@ -166,7 +166,7 @@ async def getUp(uid, SESSDATA, CSRF):
         result = await request(durl.format(uid), header, cookies)
     if not result:
         return({'success': False, 'name': 'name', "did":0})
-    data = json.loads(result.text).get('data')
+    data = json.loads(result.content).get('data')
     cards = data.get('cards')
     if not cards or len(cards) == 0:
         return({'success': False, 'name': 'name', "did":0})
@@ -175,3 +175,4 @@ async def getUp(uid, SESSDATA, CSRF):
     did = cards[0].get('desc').get('dynamic_id')
     
     return({'success': True, 'name': name, "did":did})
+    
