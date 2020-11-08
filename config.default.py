@@ -11,3 +11,6 @@ mysql_port = 3306
 mysql_user = 'root'
 mysql_pswd = 'password'
 mysql_db = 'database'
+
+SESSDATA = ''
+CSRF = ''
