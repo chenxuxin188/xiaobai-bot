@@ -15,9 +15,11 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
             try:
                 await bot.send_msg(self_id=self_id, group_id=group_id, message = message)
                 s = True
+                return True
             except:
                 print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[BILI]' + traceback.format_exc())
                 s = False
+        return False
 
     l = await db.biliList()
     g = await db.groupList()
