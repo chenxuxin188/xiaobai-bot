@@ -2,23 +2,24 @@ from .info import getCards, request, getLive
 import asyncio
 import json
 import time 
+from random import randrange
 
 loop = asyncio.new_event_loop()
 
-async def checkUps(bot, db, CQparse, groups):
+async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
     l = await db.biliList()
     g = await db.groupList()
     if not l or not g:
         return
 
     for b in l:
-        await asyncio.sleep(10)
+        await asyncio.sleep(randrange(10,60))
         uid = b[0]
         name = b[1]
         did = b[2]
         blive = b[3]
-        cards = await getCards(uid)
-        live = await getLive(uid)
+        cards = await getCards(uid, SESSDATA, CSRF)
+        live = await getLive(uid, SESSDATA, CSRF)
         if not cards or len(cards) == 0:
             continue
         dl = []

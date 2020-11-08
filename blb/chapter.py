@@ -9,14 +9,14 @@ url = 'http://book.sfacg.com/Novel/{}/MainIndex/'
 freeReg = r'\/Novel\/(?P<book>[0-9]*)\/(?P<volume>[0-9]*)\/(?P<chapter>[0-9]*)\/'
 vipReg = r'\/vip\/c\/(?P<chapter>[0-9]*)\/'
 
-header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36 Edg/84.0.522.49","Host": "book.sfacg.com"}
+header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36 Edg/86.0.622.38","Host": "book.sfacg.com"}
 
 async def request(url, header):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(url, headers = header, timeout=30)
             return response
-        except httpx.HTTPError:
+        except:
             print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[HTTP]' + url + '\n' + traceback.format_exc())
             return False
 
@@ -25,7 +25,9 @@ async def checkNovel(book):
     t = 0
     while t < 3 and not r:
         t += 1
-        r = await request(url.format(book), header)
+        h = header
+        h.update({"Referer":'http://book.sfacg.com/Novel/{}/'.format(book)})
+        r = await request(url.format(book), h)
         await asyncio.sleep(1)
     if r:
         m = 0
@@ -73,6 +75,8 @@ async def getChapters(free, vip, book, name):
         c = 0
         while not r and c < 3:
             c += 1
+            h = header
+            h.update({"Referer":'http://book.sfacg.com/Novel/{}/MainIndex/'.format(book)})
             r = await request(freeurl.format(book,f[1],f[0]), header)
         if not r:
             continue
@@ -134,6 +138,8 @@ async def getNovel(book):
     t = 0
     while t < 3 and not r:
         t += 1
+        h = header
+        h.update({"Referer":'http://book.sfacg.com/Novel/{}/'.format(book)})
         r = await request(url.format(book), header)
     if r:
         m = 0

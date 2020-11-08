@@ -46,8 +46,8 @@ async def followblb():
 
 async def followbili():
     while True:
-        await asyncio.sleep(30)
-        await bili.checkUps(bot, db, CQparse, groups)
+        await asyncio.sleep(randrange(10,60))
+        await bili.checkUps(bot, db, CQparse, groups, config.SESSDATA, config.CSRF)
 
 async def updateBlb():
     while True:
@@ -93,7 +93,7 @@ async def updateBili():
                         if not q:
                             add.update({gg:True})
             for v in add.keys():
-                r = await bili.getUp(v)
+                r = await bili.getUp(v, config.SESSDATA, config.CSRF)
                 if r.get('success'):
                     await db.biliAdd(v,r.get('name'),r.get('did'),0)
             await asyncio.sleep(1)
