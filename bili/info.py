@@ -106,31 +106,37 @@ async def getCards(uid, SESSDATA, CSRF):
                         odesc = oitem.get('description')
                         ocont = oitem.get('content')
                         if odesc:
+                            ouser = origin.get('user').get('name')
                             opic = oitem.get('pictures')
-                            cc.append({"id": did, "type": "update_forward_picture_dynamic", "content":content,"o_content": odesc, "pic": opic,"time":ltime})
+                            cc.append({"id": did, "type": "update_forward_picture_dynamic", "content":content,"o_content": odesc, "pic": opic,"time":ltime, "ouser":ouser})
                         else:
-                            cc.append({"id": did, "type": "update_forward_dynamic", "content":content,"o_content": ocont, "time":ltime})
+                            ouser = origin.get('user').get('uname')
+                            cc.append({"id": did, "type": "update_forward_dynamic", "content":content,"o_content": ocont, "time":ltime, "ouser":ouser})
                     else :
                         course = origin.get('url')
                         id_ = origin.get('id')
                         vest = origin.get('vest')
                         if course:
+                            ouser = origin.get('up_info').get('name')
                             title = origin.get('title')
-                            cc.append({"id": did, "type": "update_forward_course", "title": title, "url": course,"time":ltime})
+                            cc.append({"id": did, "type": "update_forward_course", "title": title, "url": course,"time":ltime, "ouser":ouser})
                         elif vest:
+                            ouser = origin.get('user').get('uname')
                             o_content = vest.get('content')
-                            cc.append({"id": did, "type": "update_forward_vest", "content":content, "o_content": o_content,"time":ltime})
+                            cc.append({"id": did, "type": "update_forward_vest", "content":content, "o_content": o_content,"time":ltime, "ouser":ouser})
                         elif id_:
+                            ouser = origin.get('author').get('name')
                             title = origin.get('title')
-                            cc.append({"id": did, "type": "update_forward_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":time})
+                            cc.append({"id": did, "type": "update_forward_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":time, "ouser":ouser})
                         else:
+                            ouser = origin.get('owner').get('name')
                             video = origin.get('jump_url')
                             ee = enc(int(re.match(avReg, video).group('av')))
                             if not ee:
                                 continue
                             video = "https://www.bilibili.com/video/{}".format(ee)
                             title = origin.get('title')
-                            cc.append({"id": did, "type": "update_forward_video", "content":content,"title": title, "url": video,"time":ltime})
+                            cc.append({"id": did, "type": "update_forward_video", "content":content,"title": title, "url": video,"time":ltime, "ouser":ouser})
                 else:
                     cc.append({"id": did, "type": "update_dynamic", "content": content, "time":ltime})
 
@@ -175,4 +181,3 @@ async def getUp(uid, SESSDATA, CSRF):
     did = cards[0].get('desc').get('dynamic_id')
     
     return({'success': True, 'name': name, "did":did})
-    
