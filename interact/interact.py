@@ -20,229 +20,298 @@ logger = {}
 usr = {}
 
 async def interact(event, bot, CQparse, db, g):
-    if re.search(liantongReg, event.message):
-        await bot.send(event, '五年起步，最高死刑喵！',at_sender = True)
-        return True
-    elif re.search(naReg, event.message):
-        await bot.send(event, CQparse.img64(naImg),at_sender = True)
-        return True
+    if event.type == 'notice':
+        if event.sub_type == 'poke':
+            if event.target_id == event.self_id:
+                w = g[5]
+                ut = logger.get(event.user_id)
+                pt = 0
+                t = time.time()
+                if ut:
+                    if t - ut < w:
+                        return False
+                    else: 
+                        pt = ut
+                        logger[event.user_id] = t
+                else:
+                    logger.update({event.user_id: t})
+                
+                signed = await db.isSigned(event.user_id)
+                ulike = await db.getLike(event.user_id)
+                mood = await db.getMood(event.user_id)
 
-    msg = event.message
-    xb = re.findall(r'小白', msg)
-    t = time.time()
-    if xb:
-        pass
-    elif usr.get(event.group_id):
-        us = usr[event.group_id].get(event.user_id)
-        if not us:
-            return False
-        if t - us > 10:
-            return False
-    else:
-        at = False
-        codes = CQparse.findCQcodes(event.message)
-        for code in codes:
-            p = CQparse.CQparse(code)
-            if p['CQtype'] == 'at':
-                if p['qq'] != 'all':
-                    if int(p['qq']) == event.self_id:
-                        at = True
-        if at == False:
-            return False
+                if not signed:
+                    await bot.send(event, '每天要签到之后才能开始互动喵！', at_sender = True)
+                    logger[event.user_id] -= w - 10
+                    return True
 
+                clike = like[1]
+                mm = 0
+                ll = 0
+                if mood < 50:
+                    mm = 0
+                elif mood < 80:
+                    mm = 1
+                else:
+                    mm = 2
 
-    w = g[5]
-    ut = logger.get(event.user_id)
-    pt = 0
-    if ut:
-        if t - ut < w:
-            return False
-        else: 
-            pt = ut
-            logger[event.user_id] = t
-    else:
-        logger.update({event.user_id: t})
-    
-    msg = CQparse.removeCQcodes(msg)
-    msg = re.sub(r'小白','', msg)
-    msg = re.sub(r' ','', msg)
+                if ulike < clike[1][0]:
+                    ll = 0
+                elif ulike < clike[1][1]:
+                    ll = 1
+                else:
+                    ll = 2
 
-    lt = time.localtime()
+                r = randrange(120)
 
-
-    signed = await db.isSigned(event.user_id)
-    ulike = await db.getLike(event.user_id)
-    mood = await db.getMood(event.user_id)
-
-
-    kq = re.search(kouqiuReg,msg)
-    if kq:
-        await bot.send(event, '真是奇怪的要求喵……')
-        dur = 0
-        if kq.group('hr') == '分钟':
-            dur = 60 * int(kq.group('min'))
-        elif kq.group('hr') == '小时':
-            dur = 60 * 60 * int(kq.group('min'))
-        await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = dur)
-
-    if re.match(signReg, msg):
-        si = await db.sign(event.user_id)
-        if si:
-            await bot.send(event, '喵喵~~签到成功了喵！\n心情值：{}'.format(si), at_sender = True)
-            return True
+                if clike[3][mm][ll] == 1:
+                    if(r < mood):
+                        await db.changeLike(event.user_id, 1)
+                elif clike[3][mm][ll] == -1:
+                    if(r > mood):
+                        await db.changeLike(event.user_id, -1)
+                await db.changeMood(event.user_id, clike[2][mm][ll])
+                x = randrange(1,len(clike[4][mm][ll]))
+                await bot.send(event, clike[4][mm][ll][x], at_sender = True)
+                if  clike[4][mm][ll][0] > 0:
+                    await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = clike[4][mm][ll][0] * 60)
+                return True
+        elif event.sub_type == 'honor':
+            if event.honor_type == 'talkative':
+                if event.user_id == event.self_id:
+                    await bot.send(event, '龙王再次下发号令，全体群员给咱喷水喵！')
+                    return True
+                else:
+                    await bot.send(event, '龙王喷水喵！', at_sender = True)
+                    return True
         else:
-            await bot.send(event, '喵？今天你已经签到过了喵！', at_sender = True)
-            return True
-    elif re.search(wsignReg, msg):
-        await bot.send(event, '要好好摸摸咱，咱才让你签到喵！', at_sender = True)
-        logger[event.user_id] -= w - 10
-        return True
+            return False
 
-    if not signed:
-        await bot.send(event, '每天要签到之后才能开始互动喵！', at_sender = True)
-        logger[event.user_id] -= w - 10
-        return True
-
-    if msg == '':
-        if not usr.get(event.group_id):
-            usr.update({event.group_id:{}})
-            usr[event.group_id].update({event.user_id:t})
-            logger[event.user_id] = pt
-            await bot.send(event, '喵？叫咱有什么事喵？', at_sender=True)
+    if event.type == 'message':
+        if re.search(liantongReg, event.message):
+            await bot.send(event, '五年起步，最高死刑喵！',at_sender = True)
             return True
-        else:
+        elif re.search(naReg, event.message):
+            await bot.send(event, CQparse.img64(naImg),at_sender = True)
+            return True
+
+        msg = event.message
+
+        xb = re.findall(r'小白', msg)
+        t = time.time()
+        if xb:
+            pass
+        elif usr.get(event.group_id):
             us = usr[event.group_id].get(event.user_id)
             if not us:
+                return False
+            if t - us > 10:
+                return False
+        else:
+            at = False
+            codes = CQparse.findCQcodes(event.message)
+            for code in codes:
+                p = CQparse.CQparse(code)
+                if p['CQtype'] == 'at':
+                    if p['qq'] != 'all':
+                        if int(p['qq']) == event.self_id:
+                            at = True
+            if at == False:
+                return False
+
+
+        w = g[5]
+        ut = logger.get(event.user_id)
+        pt = 0
+        if ut:
+            if t - ut < w:
+                return False
+            else: 
+                pt = ut
+                logger[event.user_id] = t
+        else:
+            logger.update({event.user_id: t})
+        
+        msg = CQparse.removeCQcodes(msg)
+        msg = re.sub(r'小白','', msg)
+        msg = re.sub(r' ','', msg)
+
+        lt = time.localtime()
+
+
+        signed = await db.isSigned(event.user_id)
+        ulike = await db.getLike(event.user_id)
+        mood = await db.getMood(event.user_id)
+
+
+        kq = re.search(kouqiuReg,msg)
+        if kq:
+            await bot.send(event, '真是奇怪的要求喵……')
+            dur = 0
+            if kq.group('hr') == '分钟':
+                dur = 60 * int(kq.group('min'))
+            elif kq.group('hr') == '小时':
+                dur = 60 * 60 * int(kq.group('min'))
+            await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = dur)
+
+        if re.match(signReg, msg):
+            si = await db.sign(event.user_id)
+            if si:
+                await bot.send(event, '喵喵~~签到成功了喵！\n心情值：{}'.format(si), at_sender = True)
+                return True
+            else:
+                await bot.send(event, '喵？今天你已经签到过了喵！', at_sender = True)
+                return True
+        elif re.search(wsignReg, msg):
+            await bot.send(event, '要好好摸摸咱，咱才让你签到喵！', at_sender = True)
+            logger[event.user_id] -= w - 10
+            return True
+
+        if not signed:
+            await bot.send(event, '每天要签到之后才能开始互动喵！', at_sender = True)
+            logger[event.user_id] -= w - 10
+            return True
+
+        if msg == '':
+            if not usr.get(event.group_id):
+                usr.update({event.group_id:{}})
                 usr[event.group_id].update({event.user_id:t})
                 logger[event.user_id] = pt
                 await bot.send(event, '喵？叫咱有什么事喵？', at_sender=True)
                 return True
             else:
-                if t - us > 10:
+                us = usr[event.group_id].get(event.user_id)
+                if not us:
                     usr[event.group_id].update({event.user_id:t})
                     logger[event.user_id] = pt
                     await bot.send(event, '喵？叫咱有什么事喵？', at_sender=True)
+                    return True
+                else:
+                    if t - us > 10:
+                        usr[event.group_id].update({event.user_id:t})
+                        logger[event.user_id] = pt
+                        await bot.send(event, '喵？叫咱有什么事喵？', at_sender=True)
+                    return True
+                        
+
+        if re.match(r'好感度', msg):
+            await bot.send(event, '咱现在对你的好感度为{}喵~'.format(ulike), at_sender = True)
+            return True
+        elif re.match(r'心情', msg):
+            t = ''
+            if mood < 50:
+                t = '不怎么样喵……'
+            elif mood < 80:
+                t = '还行喵~'
+            else:
+                t = '非常棒喵！'
+            await bot.send(event, '心情值：{}\n咱现在的心情{}'.format(mood,t))
+            return True
+        
+        if re.search(zaoReg,msg):
+            if lt.tm_hour >= 4 and lt.tm_hour <= 10:
+                await bot.send(event, '早上好喵~~', at_sender = True)
                 return True
-                    
+            elif lt.tm_hour >=10 and lt.tm_hour <=18:
+                await bot.send(event, '现在已经不早了喵。如果你那是早上的话，那就早上好喵~如果你现在才起床的话，咱希望你今晚早点睡喵！早睡早起，身体棒棒喵！', at_sender=True)
+                return True
+            else:
+                await bot.send(event, '喵？都这个点了，怎么还在跟咱说早上好瞄？唔喵……如果你那边是早上的话，那就早上好喵！', at_sender = True)
+                return True
+        elif re.match(wananReg,msg):
+            ud = await bot.get_group_member_info(group_id = event.group_id, user_id = event.user_id)
+            md = await bot.get_group_member_info(group_id = event.group_id, user_id = event.self_id)
 
-    if re.match(r'好感度', msg):
-        await bot.send(event, '咱现在对你的好感度为{}喵~'.format(ulike), at_sender = True)
-        return True
-    elif re.match(r'心情', msg):
-        t = ''
-        if mood < 50:
-            t = '不怎么样喵……'
-        elif mood < 80:
-            t = '还行喵~'
-        else:
-            t = '非常棒喵！'
-        await bot.send(event, '心情值：{}\n咱现在的心情{}'.format(mood,t))
-        return True
-    
-    if re.search(zaoReg,msg):
-        if lt.tm_hour >= 4 and lt.tm_hour <= 10:
-            await bot.send(event, '早上好喵~~', at_sender = True)
+            if (md['role'] == 'owner' and ud['role'] == 'admin') or (md['role'] == 'admin' and ud['role'] == 'member'):
+                await bot.send(event, '晚安喵~咱口球给你戴好了，一定要睡够八个小时喵！', at_sender = True)
+                await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = 28800)
+            else:
+                await bot.send(event, '晚安喵~一定要睡够八个小时喵！', at_sender = True)
             return True
-        elif lt.tm_hour >=10 and lt.tm_hour <=18:
-            await bot.send(event, '现在已经不早了喵。如果你那是早上的话，那就早上好喵~如果你现在才起床的话，咱希望你今晚早点睡喵！早睡早起，身体棒棒喵！', at_sender=True)
-            return True
-        else:
-            await bot.send(event, '喵？都这个点了，怎么还在跟咱说早上好瞄？唔喵……如果你那边是早上的话，那就早上好喵！', at_sender = True)
-            return True
-    elif re.match(wananReg,msg):
-        ud = await bot.get_group_member_info(group_id = event.group_id, user_id = event.user_id)
-        md = await bot.get_group_member_info(group_id = event.group_id, user_id = event.self_id)
 
-        if (md['role'] == 'owner' and ud['role'] == 'admin') or (md['role'] == 'admin' and ud['role'] == 'member'):
-            await bot.send(event, '晚安喵~咱口球给你戴好了，一定要睡够八个小时喵！', at_sender = True)
-            await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = 28800)
-        else:
-            await bot.send(event, '晚安喵~一定要睡够八个小时喵！', at_sender = True)
-        return True
+        clike = False
+        cnolike = False
+        cnormal = False
 
-    clike = False
-    cnolike = False
-    cnormal = False
-
-    for l in like:
-        if re.match(l[0], msg):
-            clike = l
-            break
-
-    if not clike:
-        for l in normal:
+        for l in like:
             if re.match(l[0], msg):
-                cnormal = l
+                clike = l
                 break
 
-    if (not clike) and (not cnormal):
-        for l in nolike:
-            if re.match(l[0], msg):
-                cnolike = l
-                break
+        if not clike:
+            for l in normal:
+                if re.match(l[0], msg):
+                    cnormal = l
+                    break
 
-    if (not clike) and (not cnormal) and (not cnolike): 
-        logger[event.user_id] = pt
-        return False
+        if (not clike) and (not cnormal):
+            for l in nolike:
+                if re.match(l[0], msg):
+                    cnolike = l
+                    break
+
+        if (not clike) and (not cnormal) and (not cnolike): 
+            logger[event.user_id] = pt
+            return False
 
 
 
-    if clike:
-        mm = 0
-        ll = 0
-        if mood < 50:
+        if clike:
             mm = 0
-        elif mood < 80:
-            mm = 1
-        else:
-            mm = 2
-
-        if ulike < clike[1][0]:
             ll = 0
-        elif ulike < clike[1][1]:
-            ll = 1
-        else:
-            ll = 2
+            if mood < 50:
+                mm = 0
+            elif mood < 80:
+                mm = 1
+            else:
+                mm = 2
 
-        r = randrange(120)
+            if ulike < clike[1][0]:
+                ll = 0
+            elif ulike < clike[1][1]:
+                ll = 1
+            else:
+                ll = 2
 
-        if clike[3][mm][ll] == 1:
-            if(r < mood):
-                await db.changeLike(event.user_id, 1)
-        elif clike[3][mm][ll] == -1:
-            if(r > mood):
-                await db.changeLike(event.user_id, -1)
-        await db.changeMood(event.user_id, clike[2][mm][ll])
-        x = randrange(1,len(clike[4][mm][ll]))
-        await bot.send(event, clike[4][mm][ll][x], at_sender = True)
-        if  clike[4][mm][ll][0] > 0:
-            await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = clike[4][mm][ll][0] * 60)
-        return True
-    elif cnormal:
-        m = mood
-        mm = 0
-        if m < 50:
+            r = randrange(120)
+
+            if clike[3][mm][ll] == 1:
+                if(r < mood):
+                    await db.changeLike(event.user_id, 1)
+            elif clike[3][mm][ll] == -1:
+                if(r > mood):
+                    await db.changeLike(event.user_id, -1)
+            await db.changeMood(event.user_id, clike[2][mm][ll])
+            x = randrange(1,len(clike[4][mm][ll]))
+            await bot.send(event, clike[4][mm][ll][x], at_sender = True)
+            if  clike[4][mm][ll][0] > 0:
+                await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = clike[4][mm][ll][0] * 60)
+            return True
+        elif cnormal:
+            m = mood
             mm = 0
-        elif m < 80:
-            mm = 1
-        else:
-            mm = 2
+            if m < 50:
+                mm = 0
+            elif m < 80:
+                mm = 1
+            else:
+                mm = 2
 
-        r = randrange(200)
-        if cnormal[3][mm] ==1:
-            if(r < m):
-                await db.changeLike(event.user_id, 1)
-        elif cnormal[3][mm] == -1:
-            if(r > m):
-                await db.changeLike(event.user_id, -1)
-        await db.changeMood(event.user_id, cnormal[2][mm])
-        x = randrange(1,len(cnormal[1][mm]))
-        await bot.send(event, cnormal[1][mm][x], at_sender = True)
-        if cnormal[1][mm][0] > 0:
-            await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = cnormal[1][mm][0] * 60)
-        return True
-    elif cnolike:
-        await bot.send(event, cnolike[1][randrange(0,len(cnolike[1]))])
-        if cnolike[2] > 0:
-            await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = cnolike[2] * 60)
-        return True
+            r = randrange(200)
+            if cnormal[3][mm] ==1:
+                if(r < m):
+                    await db.changeLike(event.user_id, 1)
+            elif cnormal[3][mm] == -1:
+                if(r > m):
+                    await db.changeLike(event.user_id, -1)
+            await db.changeMood(event.user_id, cnormal[2][mm])
+            x = randrange(1,len(cnormal[1][mm]))
+            await bot.send(event, cnormal[1][mm][x], at_sender = True)
+            if cnormal[1][mm][0] > 0:
+                await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = cnormal[1][mm][0] * 60)
+            return True
+        elif cnolike:
+            await bot.send(event, cnolike[1][randrange(0,len(cnolike[1]))])
+            if cnolike[2] > 0:
+                await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = cnolike[2] * 60)
+            return True

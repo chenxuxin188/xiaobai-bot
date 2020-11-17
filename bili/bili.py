@@ -24,7 +24,7 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
         return
 
     for b in l:
-        await asyncio.sleep(30)
+        await asyncio.sleep(10)
         uid = b[0]
         name = b[1]
         did = b[2]
@@ -65,7 +65,7 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】发送新动态了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "：\n" + u.get('content'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('content'))
                                 await asyncio.sleep(0.1)
                                 pics = ''
                                 for pic in u.get('pic'):
@@ -75,7 +75,7 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】转发动态了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "：\n" + u.get('content'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('content'))
                                 await asyncio.sleep(0.1)
                                 await sendmsg(self_id=a, group_id=group[0],message="原文：\n" + u.get('ouser') + "：\n" + u.get('o_content'))
                                 await asyncio.sleep(0.1)
@@ -87,7 +87,7 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】转发动态了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "：\n" + u.get('content'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('content'))
                                 await asyncio.sleep(0.1)
                                 await sendmsg(self_id=a, group_id=group[0],message="原文：\n" + u.get('ouser') + "：\n" + u.get('o_content'))
                                 await asyncio.sleep(0.1)
@@ -95,13 +95,13 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】发送新动态了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "：\n" + u.get('content'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('content'))
                                 await asyncio.sleep(0.1)
                             elif u.get('type') == 'update_forward_course':
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】转发课程了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + "课程发布者：" + u.get('ouser') + "：\n" + u.get('title'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "\n" + "课程发布者：" + u.get('ouser') + "：\n" + u.get('title'))
                                 await asyncio.sleep(0.1)
                                 await sendmsg(self_id=a, group_id=group[0],message='课程链接：' + u.get('url'))
                                 await asyncio.sleep(0.1)
@@ -109,7 +109,7 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】发送新视频了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "：\n" + u.get('content') + "\n" + u.get('title'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('content') + "\n" + u.get('title'))
                                 await asyncio.sleep(0.1)
                                 await sendmsg(self_id=a, group_id=group[0],message='视频链接：' + u.get('url'))
                                 await asyncio.sleep(0.1)
@@ -117,7 +117,7 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】转发视频了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "：\n" + u.get('content') + "\n" + u.get('ouser') + "：\n" + u.get('title'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('content') + "\n" + u.get('ouser') + "：\n" + u.get('title'))
                                 await asyncio.sleep(0.1)
                                 await sendmsg(self_id=a, group_id=group[0],message='视频链接：' + u.get('url'))
                                 await asyncio.sleep(0.1)
@@ -125,7 +125,7 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】发送新专栏了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "：\n" + u.get('title'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('title'))
                                 await asyncio.sleep(0.1)
                                 await sendmsg(self_id=a, group_id=group[0],message='专栏链接：' + u.get('url'))
                                 await asyncio.sleep(0.1)
@@ -133,7 +133,7 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】转发专栏了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + u.get('ouser') + "：\n" + u.get('title'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "\n" + u.get('ouser') + "：\n" + u.get('title'))
                                 await asyncio.sleep(0.1)
                                 await sendmsg(self_id=a, group_id=group[0],message='专栏链接：' + u.get('url'))
                                 await asyncio.sleep(0.1)
@@ -141,15 +141,23 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】更换新装饰了喵！".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "：\n" + u.get('content'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('content'))
                                 await asyncio.sleep(0.1)
                             elif u.get('type') == 'update_forward_vest':
                                 await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】真的好无聊喵，转发换装饰的消息干什喵？".format(name))
                                 await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
                                 await asyncio.sleep(0.1)
-                                await sendmsg(self_id=a, group_id=group[0],message=name + time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "：\n" + u.get('content'))
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('content'))
                                 await asyncio.sleep(0.1)
                                 await sendmsg(self_id=a, group_id=group[0],message="原文：\n" + u.get('o_content'))
+                                await asyncio.sleep(0.1)
+                            elif u.get('type') == 'update_forward_live':
+                                await sendmsg(self_id=a, group_id=group[0],message="关注的UP主【{}】转发了直播间喵！".format(name))
+                                await sendmsg(self_id=a, group_id=group[0],message='动态链接：https://t.bilibili.com/{}'.format(u.get('id')))
+                                await asyncio.sleep(0.1)
+                                await sendmsg(self_id=a, group_id=group[0],message=time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime(u.get('time'))) + "\n" + name + "：\n" + u.get('content'))
+                                await asyncio.sleep(0.1)
+                                await sendmsg(self_id=a, group_id=group[0],message="直播间地址：\n" + u.get('url'))
                                 await asyncio.sleep(0.1)
                         break
         if len(dl) != 0:

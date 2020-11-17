@@ -116,6 +116,8 @@ async def getCards(uid, SESSDATA, CSRF):
                         course = origin.get('url')
                         id_ = origin.get('id')
                         vest = origin.get('vest')
+                        video = origin.get('jump_url')
+                        room = origin.get('roomid')
                         if course:
                             ouser = origin.get('up_info').get('name')
                             title = origin.get('title')
@@ -127,16 +129,18 @@ async def getCards(uid, SESSDATA, CSRF):
                         elif id_:
                             ouser = origin.get('author').get('name')
                             title = origin.get('title')
-                            cc.append({"id": did, "type": "update_forward_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":time, "ouser":ouser})
-                        else:
+                            cc.append({"id": did, "type": "update_forward_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":ltime, "ouser":ouser})
+                        elif video:
                             ouser = origin.get('owner').get('name')
-                            video = origin.get('jump_url')
                             ee = enc(int(re.match(avReg, video).group('av')))
                             if not ee:
                                 continue
                             video = "https://www.bilibili.com/video/{}".format(ee)
                             title = origin.get('title')
                             cc.append({"id": did, "type": "update_forward_video", "content":content,"title": title, "url": video,"time":ltime, "ouser":ouser})
+                        elif room:
+                            ouser = origin.get('uname')
+                            cc.append({"id": did, "type": "update_forward_live", "content":content,"url": 'https://live.bilibili.com/{}'.format(room),"time":ltime, "ouser":ouser})
                 else:
                     cc.append({"id": did, "type": "update_dynamic", "content": content, "time":ltime})
 

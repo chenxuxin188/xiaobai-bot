@@ -46,7 +46,7 @@ async def followblb():
 
 async def followbili():
     while True:
-        await asyncio.sleep(30)
+        await asyncio.sleep(10)
         await bili.checkUps(bot, db, CQparse, groups, config.SESSDATA, config.CSRF)
 
 async def updateBlb():
@@ -148,7 +148,10 @@ async def _private(event:Event):
 @bot.on_message('group.normal')
 async def _groupMsg(event: Event):
     if await yeshou(event, bot):
+        pushcall(time.time())
         return
+
+    
     t = time.time()
     g = None
     
@@ -191,6 +194,37 @@ async def _groupMsg(event: Event):
         pushcall(time.time())
         await repeat.randomRepeat(event,bot, g)
     return
+
+@bot.on_notice('notify')
+async def _notifyEvent(event: Event):
+    t = time.time()
+    g = None
+    
+    gr = ginfo.get(event.group_id)
+    if not gr:
+        await db.addGroup(event.group_id)
+        g = await db.getGroup(event.group_id)
+        ginfo.update({g[0]:[g, t]})
+    elif t - gr[1] > 60:
+        g = await db.getGroup(event.group_id)
+        ginfo.update({g[0]:[g, t]})
+    else:
+        g = gr[0]
+
+    if g[8] == 1:
+        return
+    if g[9]:
+        x = json.loads(g[9])
+        for i in x:
+            if i == event.user_id:
+                return
+
+    if await interact.interact(event, bot, CQparse, db, g): 
+        pushcall(time.time())
+        return
+
+    
+
 
 
 @bot.on_notice('group_recall')
