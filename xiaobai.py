@@ -235,7 +235,7 @@ async def _antirecall(event: Event):
         return
     await antirecall.antirecall(event, bot, g)
 
-@bot.on_notice('group_increase.approve', 'group_increase.invite')
+@bot.on_notice('group_increase')
 async def _welcome(event: Event):
     await bot.send(event, '欢迎新人喵~~', at_sender = True)
     return

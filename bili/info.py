@@ -32,7 +32,7 @@ async def request(url, headers, cookies):
         try:
             response = await client.get(url, headers = headers, cookies = cookies, timeout=30)
             return response
-        except httpx.HTTPError:
+        except:
             print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[HTTP]' + traceback.format_exc())
             return False
 
