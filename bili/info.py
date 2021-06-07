@@ -102,15 +102,23 @@ async def getCards(uid, SESSDATA, CSRF):
                 if cd.get('origin'):
                     origin = json.loads(cd.get('origin'))
                     oitem = origin.get('item')
+                    ouser = ''
+                    if origin.get('up_info'):
+                        ouser = origin.get('up_info').get('name')
+                    elif origin.get('user'):
+                        ouser = origin.get('user').get('uname')
+                    elif origin.get('author'):
+                        ouser = origin.get('author').get('name')
+                    elif origin.get('uname'):
+                        ouser = origin.get('uname')
+
                     if oitem:
                         odesc = oitem.get('description')
                         ocont = oitem.get('content')
                         if odesc:
-                            ouser = origin.get('user').get('name')
                             opic = oitem.get('pictures')
                             cc.append({"id": did, "type": "update_forward_picture_dynamic", "content":content,"o_content": odesc, "pic": opic,"time":ltime, "ouser":ouser})
                         else:
-                            ouser = origin.get('user').get('uname')
                             cc.append({"id": did, "type": "update_forward_dynamic", "content":content,"o_content": ocont, "time":ltime, "ouser":ouser})
                     else :
                         course = origin.get('url')
@@ -119,19 +127,15 @@ async def getCards(uid, SESSDATA, CSRF):
                         video = origin.get('jump_url')
                         room = origin.get('roomid')
                         if course:
-                            ouser = origin.get('up_info').get('name')
                             title = origin.get('title')
                             cc.append({"id": did, "type": "update_forward_course", "title": title, "url": course,"time":ltime, "ouser":ouser})
                         elif vest:
-                            ouser = origin.get('user').get('uname')
                             o_content = vest.get('content')
                             cc.append({"id": did, "type": "update_forward_vest", "content":content, "o_content": o_content,"time":ltime, "ouser":ouser})
                         elif id_:
-                            ouser = origin.get('author').get('name')
                             title = origin.get('title')
                             cc.append({"id": did, "type": "update_forward_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":ltime, "ouser":ouser})
                         elif video:
-                            ouser = origin.get('owner').get('name')
                             ee = enc(int(re.match(avReg, video).group('av')))
                             if not ee:
                                 continue
@@ -139,7 +143,6 @@ async def getCards(uid, SESSDATA, CSRF):
                             title = origin.get('title')
                             cc.append({"id": did, "type": "update_forward_video", "content":content,"title": title, "url": video,"time":ltime, "ouser":ouser})
                         elif room:
-                            ouser = origin.get('uname')
                             cc.append({"id": did, "type": "update_forward_live", "content":content,"url": 'https://live.bilibili.com/{}'.format(room),"time":ltime, "ouser":ouser})
                 else:
                     cc.append({"id": did, "type": "update_dynamic", "content": content, "time":ltime})

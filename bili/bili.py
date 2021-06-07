@@ -31,7 +31,7 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
         cards = await getCards(uid, SESSDATA, CSRF)
         live = await getLive(uid, SESSDATA, CSRF)
 
-        if not bili[uid]:
+        if not bili.get(uid):
             bili.update({uid: [cards[0].get('id'), live]})
             continue
 
