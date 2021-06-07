@@ -44,10 +44,10 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
         
         lstat = None
         if live:
-            if bili[uid][1] == 0:
+            if not bili[uid][1]:
                 lstat = 1
         elif not live:
-            if bili[uid][1] == 1:
+            if bili[uid][1]:
                 lstat = 0
                 
         for group in g:
@@ -166,5 +166,5 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                         break
         if len(dl) != 0:
             bili[uid][0] = dl[0].get('id')
-        if lstat == 0 or lstat == 1:
-            bili[uid][1] = lstat
+        if lstat != None:
+            bili[uid][1] = live
