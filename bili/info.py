@@ -7,7 +7,7 @@ import json
 
 durl = 'https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid={}&offset_dynamic_id=0&need_top=0'
 lurl = 'http://api.live.bilibili.com/bili/living_v2/{}'
-header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"}
+header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36 Edg/91.0.864.41"}
 
 table='fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF'
 tr={}
@@ -50,8 +50,9 @@ async def getLive(uid, SESSDATA, CSRF):
     code = json.loads(result.content).get('code')
     msg = json.loads(result.content).get('message')
     if code != 0:
-        print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[HTTP]' + 'Code:{}  Msg:{}'.format(code,msg))
+        print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[直播]' + 'Code:{}  Msg:{}'.format(code,msg))
         return False
+    
     data = json.loads(result.content).get('data')
     if not data:
         return False
@@ -78,7 +79,7 @@ async def getCards(uid, SESSDATA, CSRF):
     code = json.loads(result.content).get('code')
     msg = json.loads(result.content).get('message')
     if code != 0:
-        print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[HTTP]' + 'Code:{}  Msg:{}'.format(code,msg))
+        print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[动态]' + 'Code:{}  Msg:{}'.format(code,msg))
         return False
     data = json.loads(result.content).get('data')
     if not data:
@@ -106,9 +107,15 @@ async def getCards(uid, SESSDATA, CSRF):
                     if origin.get('up_info'):
                         ouser = origin.get('up_info').get('name')
                     elif origin.get('user'):
-                        ouser = origin.get('user').get('uname')
+                        if origin.get('user').get('name'):
+                            ouser = origin.get('user').get('name')
+                        elif origin.get('user').get('uname'):
+                            ouser = origin.get('user').get('uname')
+
                     elif origin.get('author'):
                         ouser = origin.get('author').get('name')
+                    elif origin.get('owner'):
+                        ouser = origin.get('owner').get('name')
                     elif origin.get('uname'):
                         ouser = origin.get('uname')
 
@@ -118,32 +125,32 @@ async def getCards(uid, SESSDATA, CSRF):
                         if odesc:
                             opic = oitem.get('pictures')
                             cc.append({"id": did, "type": "update_forward_picture_dynamic", "content":content,"o_content": odesc, "pic": opic,"time":ltime, "ouser":ouser})
-                        else:
+                        elif ocont:
                             cc.append({"id": did, "type": "update_forward_dynamic", "content":content,"o_content": ocont, "time":ltime, "ouser":ouser})
-                    else :
-                        course = origin.get('url')
-                        id_ = origin.get('id')
-                        vest = origin.get('vest')
-                        video = origin.get('jump_url')
-                        room = origin.get('roomid')
-                        if course:
-                            title = origin.get('title')
-                            cc.append({"id": did, "type": "update_forward_course", "title": title, "url": course,"time":ltime, "ouser":ouser})
-                        elif vest:
-                            o_content = vest.get('content')
-                            cc.append({"id": did, "type": "update_forward_vest", "content":content, "o_content": o_content,"time":ltime, "ouser":ouser})
-                        elif id_:
-                            title = origin.get('title')
-                            cc.append({"id": did, "type": "update_forward_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":ltime, "ouser":ouser})
-                        elif video:
-                            ee = enc(int(re.match(avReg, video).group('av')))
-                            if not ee:
-                                continue
-                            video = "https://www.bilibili.com/video/{}".format(ee)
-                            title = origin.get('title')
-                            cc.append({"id": did, "type": "update_forward_video", "content":content,"title": title, "url": video,"time":ltime, "ouser":ouser})
-                        elif room:
-                            cc.append({"id": did, "type": "update_forward_live", "content":content,"url": 'https://live.bilibili.com/{}'.format(room),"time":ltime, "ouser":ouser})
+                        else :
+                            course = origin.get('url')
+                            id_ = origin.get('id')
+                            vest = origin.get('vest')
+                            video = origin.get('jump_url')
+                            room = origin.get('roomid')
+                            if course:
+                                title = origin.get('title')
+                                cc.append({"id": did, "type": "update_forward_course", "title": title, "url": course,"time":ltime, "ouser":ouser})
+                            elif vest:
+                                o_content = vest.get('content')
+                                cc.append({"id": did, "type": "update_forward_vest", "content":content, "o_content": o_content,"time":ltime, "ouser":ouser})
+                            elif id_:
+                                title = origin.get('title')
+                                cc.append({"id": did, "type": "update_forward_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":ltime, "ouser":ouser})
+                            elif video:
+                                ee = enc(int(re.match(avReg, video).group('av')))
+                                if not ee:
+                                    continue
+                                video = "https://www.bilibili.com/video/{}".format(ee)
+                                title = origin.get('title')
+                                cc.append({"id": did, "type": "update_forward_video", "content":content,"title": title, "url": video,"time":ltime, "ouser":ouser})
+                            elif room:
+                                cc.append({"id": did, "type": "update_forward_live", "content":content,"url": 'https://live.bilibili.com/{}'.format(room),"time":ltime, "ouser":ouser})
                 else:
                     cc.append({"id": did, "type": "update_dynamic", "content": content, "time":ltime})
 
@@ -178,6 +185,12 @@ async def getUp(uid, SESSDATA, CSRF):
         cookies.set("bili_jct", CSRF, domain=".bilibili.com")
         result = await request(durl.format(uid), header, cookies)
     if not result:
+        return({'success': False, 'name': 'name', "did":0})
+
+    code = json.loads(result.content).get('code')
+    msg = json.loads(result.content).get('message')
+    if code != 0:
+        print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[HTTP]' + 'Code:{}  Msg:{}'.format(code,msg))
         return({'success': False, 'name': 'name', "did":0})
     data = json.loads(result.content).get('data')
     cards = data.get('cards')
