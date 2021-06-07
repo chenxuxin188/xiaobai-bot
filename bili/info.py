@@ -107,7 +107,11 @@ async def getCards(uid, SESSDATA, CSRF):
                     if origin.get('up_info'):
                         ouser = origin.get('up_info').get('name')
                     elif origin.get('user'):
-                        ouser = origin.get('user').get('name')
+                        if origin.get('user').get('name'):
+                            ouser = origin.get('user').get('name')
+                        elif origin.get('user').get('uname'):
+                            ouser = origin.get('user').get('uname')
+
                     elif origin.get('author'):
                         ouser = origin.get('author').get('name')
                     elif origin.get('owner'):
