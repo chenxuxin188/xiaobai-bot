@@ -4,7 +4,7 @@ import json
 import time
 import traceback
 
-loop = asyncio.new_event_loop()
+bili = {}
 
 async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
     async def sendmsg(self_id,group_id,message):
@@ -27,23 +27,27 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
         await asyncio.sleep(10)
         uid = b[0]
         name = b[1]
-        did = b[2]
-        blive = b[3]
+
         cards = await getCards(uid, SESSDATA, CSRF)
         live = await getLive(uid, SESSDATA, CSRF)
+
+        if not bili[uid]:
+            bili.update({uid: [cards[0].get('id'), live]})
+            continue
+
         if not cards or len(cards) == 0:
             continue
         dl = []
         for c in cards:
-            if c.get('id') > did:
+            if c.get('id') > bili[uid][0]:
                 dl.append(c)
         
         lstat = None
         if live:
-            if blive == 0:
+            if bili[uid][1] == 0:
                 lstat = 1
         elif not live:
-            if blive == 1:
+            if bili[uid][1] == 1:
                 lstat = 0
                 
         for group in g:
@@ -161,6 +165,6 @@ async def checkUps(bot, db, CQparse, groups, SESSDATA, CSRF):
                                 await asyncio.sleep(0.1)
                         break
         if len(dl) != 0:
-            await db.biliDynamicUpdated(uid, dl[0].get('id'))
+            bili[uid][0] = dl[0].get('id')
         if lstat == 0 or lstat == 1:
-            await db.biliLiveUpdated(uid, lstat)
+            bili[uid][1] = lstat
