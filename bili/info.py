@@ -93,85 +93,83 @@ async def getCards(uid, SESSDATA, CSRF):
         ltime = card['desc'].get('timestamp')
         cd = json.loads(card.get('card'))
         item = cd.get('item')
-        if item:
-            description = item.get('description')
-            content = item.get('content')
-            if description:
-                pic = item.get('pictures')
-                cc.append({"id": did, "type": "update_picture_dynamic", "content": description, "pic": pic, "time":ltime})
-            else:
-                if cd.get('origin'):
-                    origin = json.loads(cd.get('origin'))
-                    oitem = origin.get('item')
-                    ouser = ''
-                    if origin.get('up_info'):
-                        ouser = origin.get('up_info').get('name')
-                    elif origin.get('user'):
-                        if origin.get('user').get('name'):
-                            ouser = origin.get('user').get('name')
-                        elif origin.get('user').get('uname'):
-                            ouser = origin.get('user').get('uname')
+        description = item.get('description')
+        content = item.get('content')
+        if description:
+            pic = item.get('pictures')
+            cc.append({"id": did, "type": "update_picture_dynamic", "content": description, "pic": pic, "time":ltime})
+        if cd.get('origin'):
+            origin = json.loads(cd.get('origin'))
+            oitem = origin.get('item')
+            ouser = ''
+            if origin.get('up_info'):
+                ouser = origin.get('up_info').get('name')
+            elif origin.get('user'):
+                if origin.get('user').get('name'):
+                    ouser = origin.get('user').get('name')
+                elif origin.get('user').get('uname'):
+                    ouser = origin.get('user').get('uname')
 
-                    elif origin.get('author'):
-                        ouser = origin.get('author').get('name')
-                    elif origin.get('owner'):
-                        ouser = origin.get('owner').get('name')
-                    elif origin.get('uname'):
-                        ouser = origin.get('uname')
+            elif origin.get('author'):
+                ouser = origin.get('author').get('name')
+            elif origin.get('owner'):
+                ouser = origin.get('owner').get('name')
+            elif origin.get('uname'):
+                ouser = origin.get('uname')
 
-                    if oitem:
-                        odesc = oitem.get('description')
-                        ocont = oitem.get('content')
-                        if odesc:
-                            opic = oitem.get('pictures')
-                            cc.append({"id": did, "type": "update_forward_picture_dynamic", "content":content,"o_content": odesc, "pic": opic,"time":ltime, "ouser":ouser})
-                        elif ocont:
-                            cc.append({"id": did, "type": "update_forward_dynamic", "content":content,"o_content": ocont, "time":ltime, "ouser":ouser})
-                        else :
-                            course = origin.get('url')
-                            id_ = origin.get('id')
-                            vest = origin.get('vest')
-                            video = origin.get('jump_url')
-                            room = origin.get('roomid')
-                            if course:
-                                title = origin.get('title')
-                                cc.append({"id": did, "type": "update_forward_course", "title": title, "url": course,"time":ltime, "ouser":ouser})
-                            elif vest:
-                                o_content = vest.get('content')
-                                cc.append({"id": did, "type": "update_forward_vest", "content":content, "o_content": o_content,"time":ltime, "ouser":ouser})
-                            elif id_:
-                                title = origin.get('title')
-                                cc.append({"id": did, "type": "update_forward_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":ltime, "ouser":ouser})
-                            elif video:
-                                ee = enc(int(re.match(avReg, video).group('av')))
-                                if not ee:
-                                    continue
-                                video = "https://www.bilibili.com/video/{}".format(ee)
-                                title = origin.get('title')
-                                cc.append({"id": did, "type": "update_forward_video", "content":content,"title": title, "url": video,"time":ltime, "ouser":ouser})
-                            elif room:
-                                cc.append({"id": did, "type": "update_forward_live", "content":content,"url": 'https://live.bilibili.com/{}'.format(room),"time":ltime, "ouser":ouser})
-                else:
-                    cc.append({"id": did, "type": "update_dynamic", "content": content, "time":ltime})
-
-        else :
+            if oitem:
+                odesc = oitem.get('description')
+                ocont = oitem.get('content')
+                if odesc:
+                    opic = oitem.get('pictures')
+                    cc.append({"id": did, "type": "update_forward_picture_dynamic", "content":content,"o_content": odesc, "pic": opic,"time":ltime, "ouser":ouser})
+                elif ocont:
+                    cc.append({"id": did, "type": "update_forward_dynamic", "content":content,"o_content": ocont, "time":ltime, "ouser":ouser})
+                else :
+                    course = origin.get('url')
+                    id_ = origin.get('id')
+                    vest = origin.get('vest')
+                    video = origin.get('jump_url')
+                    room = origin.get('roomid')
+                    if course:
+                        title = origin.get('title')
+                        cc.append({"id": did, "type": "update_forward_course", "title": title, "url": course,"time":ltime, "ouser":ouser})
+                    elif vest:
+                        o_content = vest.get('content')
+                        cc.append({"id": did, "type": "update_forward_vest", "content":content, "o_content": o_content,"time":ltime, "ouser":ouser})
+                    elif id_:
+                        title = origin.get('title')
+                        cc.append({"id": did, "type": "update_forward_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":ltime, "ouser":ouser})
+                    elif video:
+                        ee = enc(int(re.match(avReg, video).group('av')))
+                        if not ee:
+                            continue
+                        video = "https://www.bilibili.com/video/{}".format(ee)
+                        title = origin.get('title')
+                        cc.append({"id": did, "type": "update_forward_video", "content":content,"title": title, "url": video,"time":ltime, "ouser":ouser})
+                    elif room:
+                        cc.append({"id": did, "type": "update_forward_live", "content":content,"url": 'https://live.bilibili.com/{}'.format(room),"time":ltime, "ouser":ouser})
+        else:
             id_ = cd.get('id')
             vest = cd.get('vest')
+            video = cd.get('jump_url')
             if vest:
                 content = vest.get('content')
                 cc.append({"id": did, "type": "update_vest", "content": content,"time":ltime})
             elif id_:
                 title = cd.get('title')
                 cc.append({"id": did, "type": "update_column", "title": title, "url": "https://www.bilibili.com/read/cv{}".format(id_),"time":ltime})
-            else:
+            elif video:
                 content = cd.get('dynamic')
-                video = cd.get('jump_url')
                 ee = enc(int(re.match(avReg, video).group('av')))
                 if not ee:
                     continue
                 video = "https://www.bilibili.com/video/{}".format(ee)
                 title = cd.get('title')
                 cc.append({"id": did, "type": "update_video", "content":content,"title": title, "url": video,"time":ltime})
+            elif content:
+                cc.append({"id": did, "type": "update_dynamic", "content": content, "time":ltime})
+
     return cc
 
 
