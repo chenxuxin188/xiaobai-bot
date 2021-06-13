@@ -91,6 +91,9 @@ async def getCards(uid, SESSDATA, CSRF):
         did = card['desc'].get('dynamic_id')
         ltime = card['desc'].get('timestamp')
         cd = json.loads(card.get('card'))
+        item = cd.get('item')
+        description = item.get('description')
+        content = item.get('content')
         if cd.get('origin'):
             origin = json.loads(cd.get('origin'))
             oitem = origin.get('item')
@@ -127,9 +130,6 @@ async def getCards(uid, SESSDATA, CSRF):
                 elif room:
                     cc.append({"id": did, "type": "update_forward_live", "content":content,"url": 'https://live.bilibili.com/{}'.format(room),"time":ltime, "ouser":ouser})
         else:
-            item = cd.get('item')
-            description = item.get('description')
-            content = item.get('content')
             id_ = cd.get('id')
             vest = cd.get('vest')
             video = cd.get('jump_url')
