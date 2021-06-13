@@ -177,12 +177,6 @@ async def sendSetu(event, bot, CQparse, g):
         await bot.send(event, '咱找不到相关的色图喵……换一个关键词咱可能就能找到了喵！', at_sender = True)
         gstat[event.group_id] = 0
         return True
-    elif(data['code'] == 404):
-        logger[event.group_id]['time'] = gpt
-        logger[event.group_id][event.user_id] = upt
-        await bot.send(event, '咱找不到相关的色图喵……换一个关键词咱可能就能找到了喵！', at_sender = True)
-        gstat[event.group_id] = 0
-        return True
     elif(data['code'] == 429):
         logger[event.group_id]['time'] = gpt
         logger[event.group_id][event.user_id] = upt
