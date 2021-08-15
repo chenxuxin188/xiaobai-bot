@@ -74,6 +74,7 @@ async def getCards(uid, SESSDATA, CSRF):
         hh.update({"origin":"https://space.bilibili.com", "referer":"https://space.bilibili.com/"})
         result = await request(durl.format(uid), hh, cookies)
     if not result:
+        print(time.strftime('[%Y-%m-%d %H:%M:%S]',time.localtime()) + '[动态]' + '获取失败')
         return False
     code = json.loads(result.content).get('code')
     msg = json.loads(result.content).get('message')
