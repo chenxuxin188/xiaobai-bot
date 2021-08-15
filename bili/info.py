@@ -91,7 +91,7 @@ async def getCards(uid, SESSDATA, CSRF):
         did = card['desc'].get('dynamic_id')
         ltime = card['desc'].get('timestamp')
         cd = json.loads(card.get('card'))
-        item = cd.get('item')
+        item = cd.get('item') or item
         description = item.get('description')
         content = item.get('content')
         if cd.get('origin'):
